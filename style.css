@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+/* Global Styles */
+html, body, [data-testid="stAppViewContainer"] {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Restored header for sidebar toggle visibility */
+[data-testid="stHeader"] {
+    background-color: transparent;
+}
+
+.block-container {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1rem !important;
+}
+
+/* Header Styling */
+.main-header {
+    background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 0.2rem;
+    text-align: center;
+}
+
+.sub-header {
+    color: #666;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Sidebar Customization */
+section[data-testid="stSidebar"] {
+    background-color: #f8f9fa;
+    border-right: 1px solid #e9ecef;
+}
+
+[data-testid="stSidebar"] .stMarkdown h3 {
+    margin-top: 0;
+    color: #182848;
+}
+
+[data-testid="stSidebar"] .stCaption {
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Expander Styling */
+.stExpander {
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+    margin-bottom: 0.5rem !important;
+    background-color: white !important;
+}
+
+.stExpander details summary {
+    font-weight: 600 !important;
+    color: #4b6cb7 !important;
+}
+
+/* Dataframe Styling */
+[data-testid="stDataFrame"] {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Metrics Styling */
+[data-testid="stMetricValue"] {
+    font-weight: 700;
+    color: #4b6cb7;
+}
+
+/* Custom Card-like containers for Streamlit blocks */
+.stMarkdown div.element-container {
+    padding: 0.5rem 0;
+}
+
+/* Warning/Error Highlighting in Table */
+.highlight-diff {
+    background-color: #ffebee;
+    color: #c62828;
+    font-weight: 600;
+}
+
+/* Button Styling (if we target them directly) */
+div.stButton > button:first-child {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+div.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    color: white;
+}
+
+/* Logo icon styling */
+.app-logo {
+    font-size: 1.5rem;
+    margin-bottom: 0.1rem;
+    display: flex;
+    justify-content: center;
+}
+
+/* Word Navigation Hint */
+.word-hint {
+    background-color: #f0f7ff;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #4b6cb7;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+    color: #1e3a8a;
+    line-height: 1.6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.word-hint b {
+    color: #182848;
+}
