@@ -129,3 +129,22 @@ div.stButton > button:hover {
 .word-hint b {
     color: #182848;
 }
+
+/* Login Screen Styling */
+.login-container {
+    max-width: 400px;
+    margin: 5rem auto;
+    padding: 2.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+}
+
+.login-header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #182848;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}

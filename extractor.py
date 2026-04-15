@@ -58,7 +58,7 @@ def extract_table_data(file_path, format_type, mode='Number'):
                 is_num = num_val is not None
                 
                 # Filter based on mode
-                if (mode == 'Number' and is_num) or (mode == 'Non-Number' and not is_num):
+                if (mode == 'Number' and is_num) or (mode == 'Text' and not is_num):
                     data.append({
                         'Table': t_idx,
                         'Address': f"Table {t_idx}_R{r_idx}C{c_idx}",

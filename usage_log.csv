@@ -1,0 +1,15 @@
+Timestamp,User,Event Type,Details
+2026-04-15 22:55:45,phuonglm,Login,Successfully signed in
+2026-04-15 22:56:04,phuonglm,Comparison,"Files: fs_Kim Hoa_2025_v ph.docx, fs_Kim Hoa_2025_e ph.docx | Mode: Number | Mismatches: 0"
+2026-04-15 22:56:18,phuonglm,Login,Successfully signed in
+2026-04-15 22:58:36,phuonglm,Login,Successfully signed in
+2026-04-15 23:01:18,phuonglm,Login,Successfully signed in
+2026-04-15 23:02:37,phuonglm,User Management,Created user: VPSG (user)
+2026-04-15 23:02:48,VPSG,Login,Successfully signed in
+2026-04-15 23:04:29,phuonglm,Login,Successfully signed in
+2026-04-15 23:04:54,phuonglm,User Management,Deleted user: user1
+2026-04-15 23:09:07,phuonglm,Login,Successfully signed in
+2026-04-15 23:11:04,phuonglm,User Management,Created user: VPBD (user)
+2026-04-15 23:20:25,VPSG,Login,Successfully signed in
+2026-04-15 23:20:32,phuonglm,Login,Successfully signed in
+2026-04-15 23:21:11,phuonglm,Login,Successfully signed in

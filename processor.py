@@ -28,7 +28,7 @@ def compare_dataframes(df1, df2, mode='Number'):
         merged['Diff'] = v1 - v2
         diff_mask = merged['Diff'].abs() > 1e-6
     else:
-        # For Non-Number mode, we just compare the raw text
+        # For Text mode, we just compare the raw text
         # Fill NaNs with empty string
         t1 = merged['Text 1'].fillna("")
         t2 = merged['Text 2'].fillna("")
