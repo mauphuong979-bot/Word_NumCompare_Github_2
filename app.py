@@ -21,9 +21,13 @@ with open("style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Authentication Logic
+# Load Users with absolute path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+USERS_FILE = os.path.join(BASE_DIR, "users.json")
+
 def load_users():
-    if os.path.exists("users.json"):
-        with open("users.json", "r") as f:
+    if os.path.exists(USERS_FILE):
+        with open(USERS_FILE, "r") as f:
             return json.load(f)["users"]
     return []
 
@@ -48,7 +52,7 @@ def save_user(username, password, role, auto_fill=False):
     })
     
     try:
-        with open("users.json", "w") as f:
+        with open(USERS_FILE, "w") as f:
             json.dump({"users": users}, f, indent=4)
         return True, f"User '{username}' added successfully."
     except Exception as e:
@@ -59,7 +63,7 @@ def remove_user(username):
     updated_users = [u for u in users if u["username"] != username]
     
     try:
-        with open("users.json", "w") as f:
+        with open(USERS_FILE, "w") as f:
             json.dump({"users": updated_users}, f, indent=4)
         return True, f"User '{username}' deleted successfully."
     except Exception as e:
@@ -82,7 +86,7 @@ def update_user_data(old_username, new_username, new_password, new_role, auto_fi
             break
             
     try:
-        with open("users.json", "w") as f:
+        with open(USERS_FILE, "w") as f:
             json.dump({"users": users}, f, indent=4)
         return True, f"User '{new_username}' updated successfully."
     except Exception as e:
@@ -91,29 +95,40 @@ def update_user_data(old_username, new_username, new_password, new_role, auto_fi
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
 
+def handle_autofill():
+    """Callback to update password field when user selection changes."""
+    users = load_users()
+    selected_user = next((u for u in users if u["username"] == st.session_state.login_user), None)
+    if selected_user and selected_user.get("auto_fill"):
+        st.session_state.login_password = selected_user["password"]
+    else:
+        st.session_state.login_password = ""
+
 def login_screen():
     st.markdown('<div class="login-container">', unsafe_allow_html=True)
     st.markdown('<div class="login-header">🔐 User Login</div>', unsafe_allow_html=True)
     
     users = load_users()
     usernames = [u["username"] for u in users]
-    # Set default to 'user' if it exists
-    default_index = usernames.index("user") if "user" in usernames else 0
-    username = st.selectbox("Select Username", usernames, index=default_index)
     
-    # Check for auto-fill
-    selected_user = next((u for u in users if u["username"] == username), None)
-    auto_pass = selected_user["password"] if selected_user and selected_user.get("auto_fill") else ""
+    # Initialize session state for login widgets if not present
+    if "login_user" not in st.session_state:
+        st.session_state.login_user = "user" if "user" in usernames else (usernames[0] if usernames else "")
+        handle_autofill() # Set initial password if needed
+
+    # User Selection with callback
+    st.selectbox("Select Username", usernames, key="login_user", on_change=handle_autofill)
     
     with st.form("login_form"):
-        password = st.text_input("Password", value=auto_pass, type="password")
+        # Password field linked to session state key
+        password = st.text_input("Password", key="login_password", type="password")
         submit = st.form_submit_button("Sign In")
         
         if submit:
-            if check_credentials(username, password):
+            if check_credentials(st.session_state.login_user, password):
                 st.session_state.authenticated = True
-                st.session_state.username = username
-                log_event(username, "Login", "Successfully signed in")
+                st.session_state.username = st.session_state.login_user
+                log_event(st.session_state.username, "Login", "Successfully signed in")
                 st.rerun()
             else:
                 st.error("Invalid username or password")

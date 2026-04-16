@@ -2,7 +2,9 @@ import csv
 import os
 from datetime import datetime
 
-LOG_FILE = "usage_log.csv"
+# Use absolute path for Streamlit Cloud compatibility
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_FILE = os.path.join(BASE_DIR, "usage_log.csv")
 
 def log_event(user, event_type, details):
     """Logs an event to the usage_log.csv file."""
