@@ -13,3 +13,14 @@ Timestamp,User,Event Type,Details
 2026-04-15 23:20:25,VPSG,Login,Successfully signed in
 2026-04-15 23:20:32,phuonglm,Login,Successfully signed in
 2026-04-15 23:21:11,phuonglm,Login,Successfully signed in
+2026-04-16 14:11:23,phuonglm,Login,Successfully signed in
+2026-04-16 14:16:40,phuonglm,Login,Successfully signed in
+2026-04-16 14:16:53,phuonglm,User Management,Updated user: VPSG
+2026-04-16 14:17:11,VPSG,Login,Successfully signed in
+2026-04-16 14:18:42,phuonglm,Login,Successfully signed in
+2026-04-16 14:19:20,phuonglm,User Management,Deleted user: VPSG
+2026-04-16 14:19:22,phuonglm,User Management,Deleted user: VPBD
+2026-04-16 14:19:24,phuonglm,User Management,Created user: user (user)
+2026-04-16 14:19:47,phuonglm,User Management,Updated user: user
+2026-04-16 14:21:55,user,Login,Successfully signed in
+2026-04-16 14:22:13,admin,Login,Successfully signed in

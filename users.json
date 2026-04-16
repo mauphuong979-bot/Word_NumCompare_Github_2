@@ -1,19 +1,16 @@
 {
     "users": [
         {
-            "username": "phuonglm",
+            "username": "admin",
             "password": "123456",
-            "role": "admin"
+            "role": "admin",
+            "auto_fill": false
         },
         {
-            "username": "VPSG",
-            "password": "1",
-            "role": "user"
-        },
-        {
-            "username": "VPBD",
-            "password": "1",
-            "role": "user"
+            "username": "user",
+            "password": "user",
+            "role": "user",
+            "auto_fill": true
         }
     ]
 }

@@ -34,7 +34,7 @@ def check_credentials(username, password):
             return True
     return False
 
-def save_user(username, password, role):
+def save_user(username, password, role, auto_fill=False):
     users = load_users()
     # Check if user already exists
     if any(u["username"] == username for u in users):
@@ -43,7 +43,8 @@ def save_user(username, password, role):
     users.append({
         "username": username,
         "password": password,
-        "role": role
+        "role": role,
+        "auto_fill": auto_fill
     })
     
     try:
@@ -64,7 +65,7 @@ def remove_user(username):
     except Exception as e:
         return False, f"Error deleting user: {e}"
 
-def update_user_data(old_username, new_username, new_password, new_role):
+def update_user_data(old_username, new_username, new_password, new_role, auto_fill):
     users = load_users()
     
     # Check if new username is already taken (if changing name)
@@ -77,6 +78,7 @@ def update_user_data(old_username, new_username, new_password, new_role):
             user["username"] = new_username
             user["password"] = new_password
             user["role"] = new_role
+            user["auto_fill"] = auto_fill
             break
             
     try:
@@ -93,11 +95,18 @@ def login_screen():
     st.markdown('<div class="login-container">', unsafe_allow_html=True)
     st.markdown('<div class="login-header">🔐 User Login</div>', unsafe_allow_html=True)
     
+    users = load_users()
+    usernames = [u["username"] for u in users]
+    # Set default to 'user' if it exists
+    default_index = usernames.index("user") if "user" in usernames else 0
+    username = st.selectbox("Select Username", usernames, index=default_index)
+    
+    # Check for auto-fill
+    selected_user = next((u for u in users if u["username"] == username), None)
+    auto_pass = selected_user["password"] if selected_user and selected_user.get("auto_fill") else ""
+    
     with st.form("login_form"):
-        users = load_users()
-        usernames = [u["username"] for u in users]
-        username = st.selectbox("Select Username", usernames)
-        password = st.text_input("Password", type="password")
+        password = st.text_input("Password", value=auto_pass, type="password")
         submit = st.form_submit_button("Sign In")
         
         if submit:
@@ -271,7 +280,7 @@ else:
     st.info("Please upload both Word documents to start the comparison.")
 
 # Admin Section: Usage Logs
-if st.session_state.authenticated and st.session_state.username == "phuonglm":
+if st.session_state.authenticated and st.session_state.username == "admin":
     st.divider()
     with st.expander("📈 Usage Logs (Admin Only)", expanded=False):
         st.markdown("### Recent Tool Activity")
@@ -303,11 +312,12 @@ if st.session_state.authenticated and st.session_state.username == "phuonglm":
             new_user = st.text_input("New Username")
             new_pass = st.text_input("New Password", type="password")
             new_role = st.selectbox("Role", ["user", "admin"], index=0)
+            new_auto_fill = st.checkbox("Auto-fill Password", value=False)
             add_btn = st.form_submit_button("➕ Add User")
             
             if add_btn:
                 if new_user and new_pass:
-                    success, msg = save_user(new_user, new_pass, new_role)
+                    success, msg = save_user(new_user, new_pass, new_role, new_auto_fill)
                     if success:
                         st.success(msg)
                         log_event(st.session_state.username, "User Management", f"Created user: {new_user} ({new_role})")
@@ -322,11 +332,11 @@ if st.session_state.authenticated and st.session_state.username == "phuonglm":
         current_users = load_users()
         
         for idx, user in enumerate(current_users):
-            is_admin_user = (user["username"] == "phuonglm")
+            is_admin_user = (user["username"] == "admin")
             
             with st.container():
                 # Display individual user row with unique keys
-                c1, c2, c3, c4, c5 = st.columns([2, 2, 1, 1, 1])
+                c1, c2, c3, c4, c5, c6 = st.columns([2, 2, 1, 1, 1, 1])
                 
                 with c1:
                     # Admin username is protected
@@ -340,12 +350,16 @@ if st.session_state.authenticated and st.session_state.username == "phuonglm":
                     edit_pass = st.text_input("Password", value=user["password"], type="password", key=f"pw_{idx}")
                 
                 with c3:
-                    # Role is editable for everyone (admin can demote themselves if they want, but usually stay admin)
+                    # Role is editable for everyone
                     edit_role = st.selectbox("Role", ["admin", "user"], index=0 if user["role"]=="admin" else 1, key=f"rl_{idx}")
                 
                 with c4:
+                    # Auto-fill toggle
+                    edit_auto = st.checkbox("Auto-fill", value=user.get("auto_fill", False), key=f"af_{idx}")
+
+                with c5:
                     if st.button("💾 Save", key=f"upd_{idx}", use_container_width=True):
-                        success, msg = update_user_data(user["username"], edit_name, edit_pass, edit_role)
+                        success, msg = update_user_data(user["username"], edit_name, edit_pass, edit_role, edit_auto)
                         if success:
                             st.success(msg)
                             log_event(st.session_state.username, "User Management", f"Updated user: {edit_name}")
@@ -353,7 +367,7 @@ if st.session_state.authenticated and st.session_state.username == "phuonglm":
                         else:
                             st.error(msg)
                 
-                with c5:
+                with c6:
                     # Admin account cannot be deleted
                     if is_admin_user:
                         st.button("🚫", disabled=True, key=f"del_dis_{idx}", help="Cannot delete main admin", use_container_width=True)
