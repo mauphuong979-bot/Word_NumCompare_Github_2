@@ -24,3 +24,20 @@ Timestamp,User,Event Type,Details
 2026-04-16 14:19:47,phuonglm,User Management,Updated user: user
 2026-04-16 14:21:55,user,Login,Successfully signed in
 2026-04-16 14:22:13,admin,Login,Successfully signed in
+2026-04-16 14:32:23,user,Login,Successfully signed in
+2026-04-16 14:32:35,admin,Login,Successfully signed in
+2026-04-16 14:33:37,user,Login,Successfully signed in
+2026-04-16 14:34:03,user,Comparison,"Files: fs_Bello_2025_v ph.docx, fs_Bello_2025_v_Hs ph.docx | Mode: Text | Mismatches: 301"
+2026-04-16 14:34:56,user,Comparison,"Files: fs_Bello_2025_v ph.docx, fs_Bello_2025_v_Hs ph.docx | Mode: Number | Mismatches: 0"
+2026-04-16 14:35:17,admin,Login,Successfully signed in
+2026-04-22 11:03:37,user,Login,Successfully signed in
+2026-04-22 11:06:41,user,PDF Conversion,Batch of 18 files processed
+2026-04-22 11:10:28,user,Login,Successfully signed in
+2026-04-22 11:14:45,user,Login,Successfully signed in
+2026-04-22 11:19:08,user,Login,Successfully signed in
+2026-04-22 11:19:47,user,Comparison,"Files: FS_CARVE_2025_V.docx, FS_CARVE_2025_V_E_tool_210426 0839.docx | Mode: Number"
+2026-04-22 11:20:49,user,Comparison,"Files: fs_forte_2024_v.docx, fs_forte_2024_v_E_tool_220426 0303.docx | Mode: Number"
+2026-04-22 11:20:58,user,PDF Conversion,Batch of 2 files processed
+2026-04-22 11:22:45,user,Login,Successfully signed in
+2026-04-22 11:23:07,user,PDF Conversion,Batch of 2 files processed
+2026-04-22 11:27:53,user,PDF Conversion,Batch of 11 files processed

@@ -16,135 +16,147 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 
 /* Header Styling */
+/* Main Header Enhancement */
 .main-header {
-    background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-weight: 700;
-    font-size: 1.8rem;
-    margin-bottom: 0.2rem;
+    font-weight: 800;
+    font-size: 2.2rem;
+    margin-bottom: 0.1rem;
     text-align: center;
+    letter-spacing: -0.025em;
 }
 
-.sub-header {
-    color: #666;
-    text-align: center;
+/* Tab Styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 2rem;
+    justify-content: center;
+    background-color: transparent;
+    padding: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 3.5rem;
+    white-space: pre-wrap;
+    background-color: transparent;
+    border-radius: 4px 4px 0 0;
+    gap: 0.5rem;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #64748b;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.stTabs [aria-selected="true"] {
+    color: #2563eb !important;
+    border-bottom: 2px solid #2563eb !important;
+}
+
+/* PDF Converter Component Styles */
+.converter-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.converter-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.file-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
     margin-bottom: 0.5rem;
+    border: 1px solid #f1f5f9;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-success { background: #dcfce7; color: #166534; }
+.status-error { background: #fee2e2; color: #991b1b; }
+
+/* Instruction Boxes */
+.guide-box {
+    background: #f0f9ff;
+    padding: 1.25rem;
+    border-radius: 10px;
+    border-left: 4px solid #0ea5e9;
+    margin-bottom: 1.5rem;
+}
+
+.guide-box h4 {
+    margin-top: 0;
+    color: #0369a1;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.guide-box ul {
+    margin-bottom: 0;
+    padding-left: 1.5rem;
+    color: #0c4a6e;
     font-size: 0.9rem;
 }
 
-/* Sidebar Customization */
-section[data-testid="stSidebar"] {
-    background-color: #f8f9fa;
-    border-right: 1px solid #e9ecef;
-}
-
-[data-testid="stSidebar"] .stMarkdown h3 {
-    margin-top: 0;
-    color: #182848;
-}
-
-[data-testid="stSidebar"] .stCaption {
-    font-size: 0.85rem;
+.settings-panel {
+    background: #f8fafc;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
     margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2rem;
 }
 
-/* Expander Styling */
-.stExpander {
-    border: 1px solid #e9ecef !important;
-    border-radius: 8px !important;
-    margin-bottom: 0.5rem !important;
-    background-color: white !important;
+.settings-panel h3 {
+    font-size: 1.1rem;
+    color: #1e3a8a;
+    margin: 0;
+    white-space: nowrap;
 }
 
-.stExpander details summary {
-    font-weight: 600 !important;
-    color: #4b6cb7 !important;
+.settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
 }
 
-/* Dataframe Styling */
-[data-testid="stDataFrame"] {
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-
-/* Metrics Styling */
-[data-testid="stMetricValue"] {
+.settings-label {
     font-weight: 700;
-    color: #4b6cb7;
+    color: #475569;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
-
-/* Custom Card-like containers for Streamlit blocks */
-.stMarkdown div.element-container {
-    padding: 0.5rem 0;
-}
-
-/* Warning/Error Highlighting in Table */
-.highlight-diff {
-    background-color: #ffebee;
-    color: #c62828;
-    font-weight: 600;
-}
-
-/* Button Styling (if we target them directly) */
-div.stButton > button:first-child {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 0.5rem 2rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
+.download-all-btn {
+    margin-top: 1.5rem;
     width: 100%;
 }
 
-div.stButton > button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    color: white;
-}
-
-/* Logo icon styling */
-.app-logo {
-    font-size: 1.5rem;
-    margin-bottom: 0.1rem;
-    display: flex;
-    justify-content: center;
-}
-
-/* Word Navigation Hint */
-.word-hint {
-    background-color: #f0f7ff;
-    padding: 1rem;
-    border-radius: 8px;
-    border-left: 4px solid #4b6cb7;
-    margin: 1rem 0;
-    font-size: 0.95rem;
-    color: #1e3a8a;
-    line-height: 1.6;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.word-hint b {
-    color: #182848;
-}
-
-/* Login Screen Styling */
-.login-container {
-    max-width: 400px;
-    margin: 5rem auto;
-    padding: 2.5rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    border: 1px solid #e9ecef;
-}
-
-.login-header {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #182848;
-    margin-bottom: 1.5rem;
-    text-align: center;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-header { font-size: 1.8rem; }
+    .stTabs [data-baseweb="tab-list"] { gap: 0.5rem; }
 }
