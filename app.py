@@ -6,12 +6,21 @@ import os
 import zipfile
 import tempfile
 import shutil
-import pythoncom
-from docx2pdf import convert
+import platform
+import subprocess
 from extractor import extract_table_data
 from processor import compare_dataframes
 from usage_logger import log_event, get_logs
 from datetime import datetime
+
+# Conditional imports for Windows-specific PDF conversion
+IS_WINDOWS = platform.system() == "Windows"
+if IS_WINDOWS:
+    try:
+        import pythoncom
+        from docx2pdf import convert as docx2pdf_convert
+    except ImportError:
+        IS_WINDOWS = False
 
 # Page Configuration
 st.set_page_config(
@@ -142,7 +151,7 @@ with st.sidebar:
         st.session_state.authenticated = False
         st.rerun()
     st.divider()
-    st.caption("Professional Document Suite v2.0")
+    st.caption(f"v2.1 ({platform.system()} Edition)")
 
 # App UI Header
 st.markdown('<div class="app-logo">📄</div>', unsafe_allow_html=True)
@@ -268,18 +277,17 @@ with tab_compare:
                 except Exception as e:
                     st.error(f"Error during analysis: {str(e)}")
     else:
-        st.info("Upload one or more Word documents to get started.")
+        st.info("Please upload Word documents to start.")
 
 # --- TAB 2: PDF CONVERTER ---
 with tab_pdf:
     st.markdown("""
         <div class="guide-box">
-            <h4>📖 Fast PDF Conversion Guide</h4>
+            <h4>📖 Multi-Platform PDF Conversion</h4>
             <ul>
-                <li>Attach one or multiple <b>.docx</b> files.</li>
-                <li>Wait for the batch conversion to complete.</li>
-                <li>Download individual PDFs or all of them in a <b>.zip</b> archive.</li>
-                <li>Original formatting and styles are preserved.</li>
+                <li><b>Windows:</b> Uses Microsoft Word engine (Highest fidelity).</li>
+                <li><b>Cloud/Linux:</b> Uses LibreOffice engine (Cross-platform compatibility).</li>
+                <li>Attach file(s), convert, and download individually or as a ZIP.</li>
             </ul>
         </div>
     """, unsafe_allow_html=True)
@@ -301,8 +309,10 @@ with tab_pdf:
             converted_files = []
             
             temp_dir = tempfile.mkdtemp()
-            # Initialize COM for the current thread
-            pythoncom.CoInitialize()
+            # Handle COM initialization for Windows
+            if IS_WINDOWS:
+                pythoncom.CoInitialize()
+
             try:
                 for i, uploaded_file in enumerate(uploaded_files):
                     status_placeholder.info(f"Processing: {uploaded_file.name}...")
@@ -315,16 +325,30 @@ with tab_pdf:
                     output_path = os.path.join(temp_dir, output_filename)
                     
                     try:
-                        convert(input_path, output_path)
+                        if IS_WINDOWS:
+                            # Use docx2pdf for Windows
+                            docx2pdf_convert(input_path, output_path)
+                        else:
+                            # Use LibreOffice for Linux
+                            subprocess.run([
+                                'libreoffice', '--headless', 
+                                '--convert-to', 'pdf', 
+                                '--outdir', temp_dir, 
+                                input_path
+                            ], check=True, capture_output=True)
                         
-                        with open(output_path, "rb") as f:
-                            pdf_data = f.read()
-                        
-                        converted_files.append({
-                            "name": output_filename,
-                            "data": pdf_data,
-                            "status": "success"
-                        })
+                        if os.path.exists(output_path):
+                            with open(output_path, "rb") as f:
+                                pdf_data = f.read()
+                            
+                            converted_files.append({
+                                "name": output_filename,
+                                "data": pdf_data,
+                                "status": "success"
+                            })
+                        else:
+                            raise Exception("Output PDF file was not generated.")
+                            
                     except Exception as e:
                         st.error(f"Failed to convert {uploaded_file.name}: {str(e)}")
                         converted_files.append({
@@ -340,8 +364,8 @@ with tab_pdf:
                 log_event(st.session_state.username, "PDF Conversion", f"Batch of {len(uploaded_files)} files processed")
                 
             finally:
-                # Cleanup
-                pythoncom.CoUninitialize()
+                if IS_WINDOWS:
+                    pythoncom.CoUninitialize()
                 shutil.rmtree(temp_dir)
 
         if 'converted_files_data' in st.session_state and st.session_state.converted_files_data:
