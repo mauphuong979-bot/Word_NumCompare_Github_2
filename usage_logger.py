@@ -40,10 +40,19 @@ def log_event(user, event_type, details):
             
             # Use specific connection key if available
             conn_key = "gsheets" if "connections" in st.secrets else "gsheets"
+            
+            # Robustly find the spreadsheet URL from secrets
+            ss_url = None
+            if "connections" in st.secrets and "gsheets" in st.secrets["connections"]:
+                ss_url = st.secrets["connections"]["gsheets"].get("spreadsheet") or st.secrets["connections"]["gsheets"].get("url")
+            elif "gsheets" in st.secrets:
+                ss_url = st.secrets["gsheets"].get("spreadsheet") or st.secrets["gsheets"].get("url")
+            
             conn = st.connection(conn_key, type=GSheetsConnection)
             
             # Read existing data with 0 TTL to ensure freshness
-            df = conn.read(ttl=0)
+            # Pass the URL explicitly if we found it to be extra safe
+            df = conn.read(spreadsheet=ss_url, ttl=0)
             
             new_row = pd.DataFrame([{
                 "Timestamp": timestamp,
@@ -58,7 +67,7 @@ def log_event(user, event_type, details):
             else:
                 updated_df = pd.concat([df, new_row], ignore_index=True)
             
-            conn.update(data=updated_df)
+            conn.update(spreadsheet=ss_url, data=updated_df)
             print("DEBUG: Google Sheets log update successful.")
             st.session_state["last_log_status"] = "Success: Logged to Google Sheets"
             return # Success
@@ -91,8 +100,17 @@ def get_logs():
     if is_gsheet_configured():
         try:
             from streamlit_gsheets import GSheetsConnection
-            conn = st.connection("gsheets", type=GSheetsConnection)
-            df = conn.read(ttl=0)
+            conn_key = "gsheets" if "connections" in st.secrets else "gsheets"
+            
+            # Find the URL
+            ss_url = None
+            if "connections" in st.secrets and "gsheets" in st.secrets["connections"]:
+                ss_url = st.secrets["connections"]["gsheets"].get("spreadsheet") or st.secrets["connections"]["gsheets"].get("url")
+            elif "gsheets" in st.secrets:
+                ss_url = st.secrets["gsheets"].get("spreadsheet") or st.secrets["gsheets"].get("url")
+                
+            conn = st.connection(conn_key, type=GSheetsConnection)
+            df = conn.read(spreadsheet=ss_url, ttl=0)
             if not df.empty:
                 return df.to_dict('records')[::-1]
         except Exception as e:

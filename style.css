@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
+/* Hide Streamlit default elements for privacy */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
 /* Global Styles */
 html, body, [data-testid="stAppViewContainer"] {
     font-family: 'Inter', sans-serif;
