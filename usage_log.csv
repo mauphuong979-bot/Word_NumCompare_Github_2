@@ -51,3 +51,7 @@ Timestamp,User,Event Type,Details
 2026-04-23 10:28:58,admin,Login,Successfully signed in
 2026-04-23 10:33:37,user,Login,Successfully signed in
 2026-04-23 10:33:47,admin,Login,Successfully signed in
+2026-04-23 10:56:09,user,Login,Successfully signed in
+2026-04-23 10:56:12,user,Login,Successfully signed in
+2026-04-23 10:56:21,admin,Login,Successfully signed in
+2026-04-23 10:58:09,admin,PDF Conversion,Batch of 1 files processed
