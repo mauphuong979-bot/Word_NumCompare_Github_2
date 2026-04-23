@@ -1,0 +1,16 @@
+{
+    "users": [
+        {
+            "username": "admin",
+            "password": "123456",
+            "role": "admin",
+            "auto_fill": false
+        },
+        {
+            "username": "user",
+            "password": "user",
+            "role": "user",
+            "auto_fill": true
+        }
+    ]
+}

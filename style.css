@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+/* Global Styles */
+html, body, [data-testid="stAppViewContainer"] {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Restored header for sidebar toggle visibility */
+[data-testid="stHeader"] {
+    background-color: transparent;
+}
+
+.block-container {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1rem !important;
+}
+
+/* Header Styling */
+/* Main Header Enhancement */
+.main-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    font-size: 2.2rem;
+    margin-bottom: 0.1rem;
+    text-align: center;
+    letter-spacing: -0.025em;
+}
+
+/* Tab Styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 2rem;
+    justify-content: center;
+    background-color: transparent;
+    padding: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 3.5rem;
+    white-space: pre-wrap;
+    background-color: transparent;
+    border-radius: 4px 4px 0 0;
+    gap: 0.5rem;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #64748b;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.stTabs [aria-selected="true"] {
+    color: #2563eb !important;
+    border-bottom: 2px solid #2563eb !important;
+}
+
+/* PDF Converter Component Styles */
+.converter-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.converter-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.file-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border: 1px solid #f1f5f9;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-success { background: #dcfce7; color: #166534; }
+.status-error { background: #fee2e2; color: #991b1b; }
+
+/* Instruction Boxes */
+.guide-box {
+    background: #f0f9ff;
+    padding: 1.25rem;
+    border-radius: 10px;
+    border-left: 4px solid #0ea5e9;
+    margin-bottom: 1.5rem;
+}
+
+.guide-box h4 {
+    margin-top: 0;
+    color: #0369a1;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.guide-box ul {
+    margin-bottom: 0;
+    padding-left: 1.5rem;
+    color: #0c4a6e;
+    font-size: 0.9rem;
+}
+
+.settings-panel {
+    background: #f8fafc;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2rem;
+}
+
+.settings-panel h3 {
+    font-size: 1.1rem;
+    color: #1e3a8a;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.settings-label {
+    font-weight: 700;
+    color: #475569;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.download-all-btn {
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-header { font-size: 1.8rem; }
+    .stTabs [data-baseweb="tab-list"] { gap: 0.5rem; }
+}

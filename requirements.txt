@@ -1,0 +1,6 @@
+streamlit
+pandas
+python-docx
+openpyxl
+pywin32; platform_system == "Windows"
+docx2pdf; platform_system == "Windows"
