@@ -49,3 +49,5 @@ Timestamp,User,Event Type,Details
 2026-04-23 10:17:55,admin,Comparison,"Files: fs_NgocSinh_2025_v.docx, fs_NgocSinh_2025_Ht_23042026.docx | Mode: Number"
 2026-04-23 10:18:01,admin,Comparison,"Files: fs_NgocSinh_2025_v.docx, fs_NgocSinh_2025_Ht_23042026.docx | Mode: Text"
 2026-04-23 10:28:58,admin,Login,Successfully signed in
+2026-04-23 10:33:37,user,Login,Successfully signed in
+2026-04-23 10:33:47,admin,Login,Successfully signed in
