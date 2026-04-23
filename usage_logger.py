@@ -11,12 +11,21 @@ LOG_FILE = os.path.join(BASE_DIR, "usage_log.csv")
 def is_gsheet_configured():
     """Checks if Google Sheets connection is configured in st.secrets."""
     try:
-        # Standard Streamlit GSheets connection format
-        return (hasattr(st, "secrets") and 
-                "connections" in st.secrets and 
-                "gsheets" in st.secrets["connections"])
+        # Check for both standard and common variations
+        if hasattr(st, "secrets"):
+            if "connections" in st.secrets and "gsheets" in st.secrets["connections"]:
+                return True
+            if "gsheets" in st.secrets:
+                return True
     except Exception:
-        return False
+        pass
+    return False
+
+def get_logging_mode():
+    """Returns a string indicating where logs are currently being saved."""
+    if is_gsheet_configured():
+        return "Google Sheets (Cloud)"
+    return "CSV (Local)"
 
 def log_event(user, event_type, details):
     """Logs an event to the appropriate destination (CSV or GSheets)."""
@@ -25,12 +34,15 @@ def log_event(user, event_type, details):
     
     if is_gsheet_configured():
         try:
+            print(f"DEBUG: Attempting to log to Google Sheets for user {user}...")
             # Import GSheetsConnection only when needed
             from streamlit_gsheets import GSheetsConnection
-            conn = st.connection("gsheets", type=GSheetsConnection)
             
-            # Read existing data to append (GSheets connection doesn't have native append yet)
-            # Use ttl=0 to always get the latest data
+            # Use specific connection key if available
+            conn_key = "gsheets" if "connections" in st.secrets else "gsheets"
+            conn = st.connection(conn_key, type=GSheetsConnection)
+            
+            # Read existing data with 0 TTL to ensure freshness
             df = conn.read(ttl=0)
             
             new_row = pd.DataFrame([{
@@ -40,14 +52,30 @@ def log_event(user, event_type, details):
                 "Details": details
             }])
             
-            updated_df = pd.concat([df, new_row], ignore_index=True)
+            # Ensure columns match
+            if df.empty:
+                updated_df = new_row
+            else:
+                updated_df = pd.concat([df, new_row], ignore_index=True)
+            
             conn.update(data=updated_df)
+            print("DEBUG: Google Sheets log update successful.")
+            st.session_state["last_log_status"] = "Success: Logged to Google Sheets"
             return # Success
         except Exception as e:
-            print(f"Error logging to GSheet: {e}")
-            # Fallback to local CSV if GSheet fails
+            error_msg = f"CRITICAL ERROR: Failed to log to GSheet: {str(e)}"
+            print(error_msg)
+            st.session_state["last_log_status"] = f"Error: {str(e)}"
+            # Final fallback just in case, but now we have a status
+            log_to_csv_fallback(timestamp, user, event_type, details)
+            return
 
-    # Default: Log to local CSV
+    # Default: Log to local CSV (for localhost)
+    log_to_csv_fallback(timestamp, user, event_type, details)
+    st.session_state["last_log_status"] = "Success: Logged to local CSV"
+
+def log_to_csv_fallback(timestamp, user, event_type, details):
+    """Fallback helper for CSV logging."""
     file_exists = os.path.isfile(LOG_FILE)
     try:
         with open(LOG_FILE, mode='a', newline='', encoding='utf-8') as f:

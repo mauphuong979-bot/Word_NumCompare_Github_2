@@ -10,7 +10,7 @@ import platform
 import subprocess
 from extractor import extract_table_data
 from processor import compare_dataframes
-from usage_logger import log_event, get_logs
+from usage_logger import log_event, get_logs, get_logging_mode
 from datetime import datetime, timedelta, timezone
 
 # Conditional imports for Windows-specific PDF conversion
@@ -431,7 +431,34 @@ if tab_admin:
         
         # --- SUB-TAB: ANALYTICS & LOGS ---
         with admin_tabs[0]:
-            st.markdown("### 📊 System Usage & Activity")
+            mode = get_logging_mode()
+            mode_color = "#2e7d32" if "Google Sheets" in mode else "#1976d2"
+            
+            st.markdown(f"""
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin:0;">📊 System Usage & Activity</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <span style="background-color: {mode_color}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: bold;">
+                            Backend: {mode}
+                        </span>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+
+            # Show last error if any
+            if "last_log_status" in st.session_state:
+                status = st.session_state["last_log_status"]
+                if "Error" in status:
+                    st.error(f"⚠️ **Logging Issue Detected:** {status}")
+                    st.info("""
+                        **How to fix Google Sheets logging:**
+                        1. Open your Google Sheet.
+                        2. Click **Share** (top right).
+                        3. Add the **Client Email** from your Service Account JSON as an **Editor**.
+                        4. Ensure the `spreadsheet` URL in Streamlit Secrets is correct.
+                    """)
+                elif "Google Sheets" in status:
+                    st.success("✅ System is successfully writing to Google Sheets.")
             
             logs = get_logs()
             if logs:
