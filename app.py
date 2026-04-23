@@ -427,78 +427,124 @@ with tab_pdf:
 # --- TAB 3: ADMIN (Admin Only) ---
 if tab_admin:
     with tab_admin:
-        st.markdown('<div class="guide-box">', unsafe_allow_html=True)
-        st.markdown("### 🛡️ System Administration")
-        st.markdown("Manage system usage logs and user accounts from this panel.")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        col_admin1, col_admin2 = st.columns([1, 1], gap="large")
-
-        with col_admin1:
-            st.markdown('<div class="converter-card">', unsafe_allow_html=True)
-            st.markdown("### 📈 Usage Logs")
+        admin_tabs = st.tabs(["📊 Usage Analytics", "👥 User Control"])
+        
+        # --- SUB-TAB: ANALYTICS & LOGS ---
+        with admin_tabs[0]:
+            st.markdown("### 📊 System Usage & Activity")
+            
             logs = get_logs()
             if logs:
                 log_df = pd.DataFrame(logs)
-                st.dataframe(log_df, use_container_width=True, height=400)
                 
+                # 1. Dashboard Metrics
+                m1, m2, m3, m4 = st.columns(4)
+                total_events = len(log_df)
+                unique_users = log_df['User'].nunique()
+                most_active = log_df['User'].value_counts().idxmax() if not log_df.empty else "N/A"
+                last_24h = len(log_df) # Placeholder for real filter if needed
+                
+                m1.metric("Total Events", total_events)
+                m2.metric("Unique Users", unique_users)
+                m3.metric("Top User", most_active)
+                m4.metric("Recent (All)", total_events)
+                
+                st.divider()
+                
+                # 2. Advanced Filters
+                st.markdown("#### 🔍 Filter Logs")
+                f_col1, f_col2, f_col3 = st.columns([2, 1, 1])
+                
+                with f_col1:
+                    search_query = st.text_input("Search details or users...", placeholder="e.g. login, user1, comparison")
+                with f_col2:
+                    event_filter = st.selectbox("Event Type", ["All"] + list(log_df['Event Type'].unique()))
+                with f_col3:
+                    row_limit = st.selectbox("Display Limit", [100, 500, 1000, "All"], index=1)
+
+                # Applying filters
+                filtered_df = log_df.copy()
+                if search_query:
+                    filtered_df = filtered_df[
+                        filtered_df['Details'].str.contains(search_query, case=False, na=False) | 
+                        filtered_df['User'].str.contains(search_query, case=False, na=False)
+                    ]
+                if event_filter != "All":
+                    filtered_df = filtered_df[filtered_df['Event Type'] == event_filter]
+                
+                if row_limit != "All":
+                    filtered_df = filtered_df.head(int(row_limit))
+
+                # 3. Enhanced Log Display
+                st.markdown(f"Showing **{len(filtered_df)}** entries")
+                st.dataframe(filtered_df, use_container_width=True, height=600)
+                
+                # 4. Actions
                 output_log = io.BytesIO()
                 with pd.ExcelWriter(output_log, engine='openpyxl') as writer:
-                    log_df.to_excel(writer, index=False, sheet_name='UsageLogs')
+                    filtered_df.to_excel(writer, index=False, sheet_name='FilteredLogs')
                 
                 vn_tz = timezone(timedelta(hours=7))
                 st.download_button(
-                    label="📥 Download System Logs (Excel)",
+                    label="📥 Export Current View to Excel",
                     data=output_log.getvalue(),
-                    file_name=f"System_Log_{datetime.now(vn_tz).strftime('%Y%m%d')}.xlsx",
+                    file_name=f"System_Log_Export_{datetime.now(vn_tz).strftime('%Y%m%d_%H%M')}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     use_container_width=True
                 )
             else:
-                st.write("No logs found.")
-            st.markdown('</div>', unsafe_allow_html=True)
+                st.info("No system logs available yet.")
 
-        with col_admin2:
-            st.markdown('<div class="converter-card">', unsafe_allow_html=True)
-            st.markdown("### 👤 User Management")
+        # --- SUB-TAB: USER MANAGEMENT ---
+        with admin_tabs[1]:
+            st.markdown("### 👥 User Account Management")
             
-            with st.expander("➕ Create New User", expanded=False):
-                with st.form("add_user_form", clear_on_submit=True):
+            uc_col1, uc_col2 = st.columns([1, 2], gap="large")
+            
+            with uc_col1:
+                st.markdown('<div class="converter-card">', unsafe_allow_html=True)
+                st.markdown("#### ➕ Create New Account")
+                with st.form("add_user_form_v2", clear_on_submit=True):
                     new_user = st.text_input("Username")
                     new_pass = st.text_input("Password", type="password")
-                    new_role = st.selectbox("Assign Role", ["user", "admin"])
+                    new_role = st.selectbox("Role", ["user", "admin"])
                     new_auto_fill = st.checkbox("Enable Auto-fill", value=False)
-                    if st.form_submit_button("➕ Register User"):
+                    if st.form_submit_button("Register User", use_container_width=True):
                         if new_user and new_pass:
                             success_add, msg_add = save_user(new_user, new_pass, new_role, new_auto_fill)
                             if success_add: st.success(msg_add)
                             else: st.error(msg_add)
-            
-            st.divider()
-            st.markdown("#### Existing Users")
-            current_users_list = load_users()
-            for idx, user_data in enumerate(current_users_list):
-                is_admin_account = (user_data["username"] == "admin")
-                with st.expander(f"👤 {user_data['username']} ({user_data['role']})", expanded=False):
-                    edit_name = st.text_input("Username", value=user_data["username"], disabled=is_admin_account, key=f"un_{idx}")
-                    edit_pass = st.text_input("Password", value=user_data["password"], type="password", key=f"pw_{idx}")
-                    edit_role = st.selectbox("Role", ["admin", "user"], index=0 if user_data["role"]=="admin" else 1, key=f"rl_{idx}")
-                    edit_auto = st.checkbox("Auto-fill", value=user_data.get("auto_fill", False), key=f"af_{idx}")
-                    
-                    ec1, ec2 = st.columns(2)
-                    with ec1:
-                        if st.button("💾 Save", key=f"upd_{idx}", use_container_width=True):
-                            success_upd, msg_upd = update_user_data(user_data["username"], edit_name, edit_pass, edit_role, edit_auto)
-                            if success_upd: st.rerun()
-                            else: st.error(msg_upd)
-                    with ec2:
-                        if is_admin_account:
-                            st.button("🚫 Delete", disabled=True, key=f"del_dis_{idx}", use_container_width=True)
-                        else:
-                            if st.button("🗑️ Delete", key=f"del_{idx}", use_container_width=True):
-                                remove_user(user_data["username"])
-                                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            with uc_col2:
+                st.markdown("#### 📋 Existing Users")
+                current_users_list = load_users()
+                
+                for idx, user_data in enumerate(current_users_list):
+                    is_admin_account = (user_data["username"] == "admin")
+                    with st.expander(f"👤 {user_data['username']} — Role: {user_data['role'].upper()}", expanded=False):
+                        e_col1, e_col2 = st.columns(2)
+                        with e_col1:
+                            edit_name = st.text_input("Username", value=user_data["username"], disabled=is_admin_account, key=f"v2_un_{idx}")
+                            edit_pass = st.text_input("Password", value=user_data["password"], type="password", key=f"v2_pw_{idx}")
+                        with e_col2:
+                            edit_role = st.selectbox("Role", ["admin", "user"], index=0 if user_data["role"]=="admin" else 1, key=f"v2_rl_{idx}")
+                            edit_auto = st.checkbox("Auto-fill", value=user_data.get("auto_fill", False), key=f"v2_af_{idx}")
+                        
+                        st.divider()
+                        ec1, ec2 = st.columns(2)
+                        with ec1:
+                            if st.button("💾 Save Changes", key=f"v2_upd_{idx}", use_container_width=True):
+                                success_upd, msg_upd = update_user_data(user_data["username"], edit_name, edit_pass, edit_role, edit_auto)
+                                if success_upd: st.rerun()
+                                else: st.error(msg_upd)
+                        with ec2:
+                            if is_admin_account:
+                                st.button("🚫 System Admin", disabled=True, key=f"v2_del_dis_{idx}", use_container_width=True)
+                            else:
+                                if st.button("🗑️ Delete User", key=f"v2_del_{idx}", use_container_width=True):
+                                    remove_user(user_data["username"])
+                                    st.rerun()
 
 # Footer
 st.divider()

@@ -155,8 +155,55 @@ html, body, [data-testid="stAppViewContainer"] {
     width: 100%;
 }
 
+/* Metric Cards */
+.metric-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.metric-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e40af;
+    margin-bottom: 0.25rem;
+}
+
+.metric-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Enhanced Table Display */
+.stDataFrame {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Log Filter styling */
+.filter-row {
+    background: #f1f5f9;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .main-header { font-size: 1.8rem; }
     .stTabs [data-baseweb="tab-list"] { gap: 0.5rem; }
+    .metric-container { grid-template-columns: 1fr; }
 }
