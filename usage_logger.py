@@ -1,6 +1,6 @@
 import csv
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 # Use absolute path for Streamlit Cloud compatibility
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -8,7 +8,9 @@ LOG_FILE = os.path.join(BASE_DIR, "usage_log.csv")
 
 def log_event(user, event_type, details):
     """Logs an event to the usage_log.csv file."""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Ensure timezone is Vietnam (UTC+7)
+    vn_tz = timezone(timedelta(hours=7))
+    timestamp = datetime.now(vn_tz).strftime("%Y-%m-%d %H:%M:%S")
     file_exists = os.path.isfile(LOG_FILE)
     
     try:

@@ -11,7 +11,7 @@ import subprocess
 from extractor import extract_table_data
 from processor import compare_dataframes
 from usage_logger import log_event, get_logs
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 # Conditional imports for Windows-specific PDF conversion
 IS_WINDOWS = platform.system() == "Windows"
@@ -48,8 +48,8 @@ def check_credentials(username, password):
     users = load_users()
     for user in users:
         if user["username"] == username and user["password"] == password:
-            return True
-    return False
+            return True, user.get("role", "user")
+    return False, None
 
 def save_user(username, password, role, auto_fill=False):
     users = load_users()
@@ -130,9 +130,11 @@ def login_screen():
         submit = st.form_submit_button("Sign In")
         
         if submit:
-            if check_credentials(st.session_state.login_user, password):
+            is_valid, role = check_credentials(st.session_state.login_user, password)
+            if is_valid:
                 st.session_state.authenticated = True
                 st.session_state.username = st.session_state.login_user
+                st.session_state.role = role
                 log_event(st.session_state.username, "Login", "Successfully signed in")
                 st.rerun()
             else:
@@ -159,7 +161,17 @@ st.markdown('<div class="main-header">Professional Document Suite</div>', unsafe
 st.markdown('<div class="sub-header">Data Comparison & Document Conversion Utilities</div>', unsafe_allow_html=True)
 
 # Main Tab Navigation
-tab_compare, tab_pdf = st.tabs(["📊 Number Comparison", "📑 Word to PDF Converter"])
+tab_titles = ["📊 Number Comparison", "📑 Word to PDF Converter"]
+if st.session_state.authenticated and st.session_state.get('role') == 'admin':
+    tab_titles.append("🛡️ Admin")
+
+tabs = st.tabs(tab_titles)
+tab_compare = tabs[0]
+tab_pdf = tabs[1]
+if len(tabs) > 2:
+    tab_admin = tabs[2]
+else:
+    tab_admin = None
 
 # --- TAB 1: NUMBER COMPARISON ---
 with tab_compare:
@@ -412,63 +424,81 @@ with tab_pdf:
     else:
         st.info("Upload one or more Word documents to get started.")
 
-# --- ADMIN SECTION ---
-if st.session_state.authenticated and st.session_state.username == "admin":
-    st.divider()
-    with st.expander("📈 Usage Logs (Admin Only)", expanded=False):
-        st.markdown("### Recent Activity Logs")
-        logs = get_logs()
-        if logs:
-            log_df = pd.DataFrame(logs)
-            st.dataframe(log_df, use_container_width=True)
-            
-            output_log = io.BytesIO()
-            with pd.ExcelWriter(output_log, engine='openpyxl') as writer:
-                log_df.to_excel(writer, index=False, sheet_name='UsageLogs')
-            
-            st.download_button(
-                label="📥 Download System Logs (Excel)",
-                data=output_log.getvalue(),
-                file_name=f"System_Log_{datetime.now().strftime('%Y%m%d')}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
-        else:
-            st.write("No logs found.")
+# --- TAB 3: ADMIN (Admin Only) ---
+if tab_admin:
+    with tab_admin:
+        st.markdown('<div class="guide-box">', unsafe_allow_html=True)
+        st.markdown("### 🛡️ System Administration")
+        st.markdown("Manage system usage logs and user accounts from this panel.")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    with st.expander("👤 User Management (Admin Only)", expanded=False):
-        st.markdown("### Create New User")
-        with st.form("add_user_form", clear_on_submit=True):
-            new_user = st.text_input("Username")
-            new_pass = st.text_input("Password", type="password")
-            new_role = st.selectbox("Assign Role", ["user", "admin"])
-            new_auto_fill = st.checkbox("Enable Auto-fill", value=False)
-            if st.form_submit_button("➕ Register User"):
-                if new_user and new_pass:
-                    success_add, msg_add = save_user(new_user, new_pass, new_role, new_auto_fill)
-                    if success_add: st.success(msg_add)
-                    else: st.error(msg_add)
-        
-        st.divider()
-        st.markdown("### Manage Existing Users")
-        current_users_list = load_users()
-        for idx, user_data in enumerate(current_users_list):
-            is_admin_account = (user_data["username"] == "admin")
-            c1, c2, c3, c4, c5, c6 = st.columns([2, 2, 1, 1, 1, 1])
-            with c1: edit_name = st.text_input("Name", value=user_data["username"], disabled=is_admin_account, key=f"un_{idx}")
-            with c2: edit_pass = st.text_input("Pass", value=user_data["password"], type="password", key=f"pw_{idx}")
-            with c3: edit_role = st.selectbox("Role", ["admin", "user"], index=0 if user_data["role"]=="admin" else 1, key=f"rl_{idx}")
-            with c4: edit_auto = st.checkbox("Auto", value=user_data.get("auto_fill", False), key=f"af_{idx}")
-            with c5:
-                if st.button("💾", key=f"upd_{idx}", help="Save changes"):
-                    success_upd, msg_upd = update_user_data(user_data["username"], edit_name, edit_pass, edit_role, edit_auto)
-                    if success_upd: st.rerun()
-                    else: st.error(msg_upd)
-            with c6:
-                if is_admin_account: st.button("🚫", disabled=True, key=f"del_dis_{idx}")
-                else:
-                    if st.button("🗑️", key=f"del_{idx}", help="Delete User"):
-                        remove_user(user_data["username"])
-                        st.rerun()
+        col_admin1, col_admin2 = st.columns([1, 1], gap="large")
+
+        with col_admin1:
+            st.markdown('<div class="converter-card">', unsafe_allow_html=True)
+            st.markdown("### 📈 Usage Logs")
+            logs = get_logs()
+            if logs:
+                log_df = pd.DataFrame(logs)
+                st.dataframe(log_df, use_container_width=True, height=400)
+                
+                output_log = io.BytesIO()
+                with pd.ExcelWriter(output_log, engine='openpyxl') as writer:
+                    log_df.to_excel(writer, index=False, sheet_name='UsageLogs')
+                
+                vn_tz = timezone(timedelta(hours=7))
+                st.download_button(
+                    label="📥 Download System Logs (Excel)",
+                    data=output_log.getvalue(),
+                    file_name=f"System_Log_{datetime.now(vn_tz).strftime('%Y%m%d')}.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True
+                )
+            else:
+                st.write("No logs found.")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        with col_admin2:
+            st.markdown('<div class="converter-card">', unsafe_allow_html=True)
+            st.markdown("### 👤 User Management")
+            
+            with st.expander("➕ Create New User", expanded=False):
+                with st.form("add_user_form", clear_on_submit=True):
+                    new_user = st.text_input("Username")
+                    new_pass = st.text_input("Password", type="password")
+                    new_role = st.selectbox("Assign Role", ["user", "admin"])
+                    new_auto_fill = st.checkbox("Enable Auto-fill", value=False)
+                    if st.form_submit_button("➕ Register User"):
+                        if new_user and new_pass:
+                            success_add, msg_add = save_user(new_user, new_pass, new_role, new_auto_fill)
+                            if success_add: st.success(msg_add)
+                            else: st.error(msg_add)
+            
+            st.divider()
+            st.markdown("#### Existing Users")
+            current_users_list = load_users()
+            for idx, user_data in enumerate(current_users_list):
+                is_admin_account = (user_data["username"] == "admin")
+                with st.expander(f"👤 {user_data['username']} ({user_data['role']})", expanded=False):
+                    edit_name = st.text_input("Username", value=user_data["username"], disabled=is_admin_account, key=f"un_{idx}")
+                    edit_pass = st.text_input("Password", value=user_data["password"], type="password", key=f"pw_{idx}")
+                    edit_role = st.selectbox("Role", ["admin", "user"], index=0 if user_data["role"]=="admin" else 1, key=f"rl_{idx}")
+                    edit_auto = st.checkbox("Auto-fill", value=user_data.get("auto_fill", False), key=f"af_{idx}")
+                    
+                    ec1, ec2 = st.columns(2)
+                    with ec1:
+                        if st.button("💾 Save", key=f"upd_{idx}", use_container_width=True):
+                            success_upd, msg_upd = update_user_data(user_data["username"], edit_name, edit_pass, edit_role, edit_auto)
+                            if success_upd: st.rerun()
+                            else: st.error(msg_upd)
+                    with ec2:
+                        if is_admin_account:
+                            st.button("🚫 Delete", disabled=True, key=f"del_dis_{idx}", use_container_width=True)
+                        else:
+                            if st.button("🗑️ Delete", key=f"del_{idx}", use_container_width=True):
+                                remove_user(user_data["username"])
+                                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer
 st.divider()

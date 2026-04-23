@@ -41,3 +41,11 @@ Timestamp,User,Event Type,Details
 2026-04-22 11:22:45,user,Login,Successfully signed in
 2026-04-22 11:23:07,user,PDF Conversion,Batch of 2 files processed
 2026-04-22 11:27:53,user,PDF Conversion,Batch of 11 files processed
+2026-04-22 11:45:20,user,Login,Successfully signed in
+2026-04-22 11:47:11,user,PDF Conversion,Batch of 6 files processed
+2026-04-23 10:12:59,admin,Login,Successfully signed in
+2026-04-23 10:16:47,admin,Login,Successfully signed in
+2026-04-23 10:17:32,admin,PDF Conversion,Batch of 1 files processed
+2026-04-23 10:17:55,admin,Comparison,"Files: fs_NgocSinh_2025_v.docx, fs_NgocSinh_2025_Ht_23042026.docx | Mode: Number"
+2026-04-23 10:18:01,admin,Comparison,"Files: fs_NgocSinh_2025_v.docx, fs_NgocSinh_2025_Ht_23042026.docx | Mode: Text"
+2026-04-23 10:28:58,admin,Login,Successfully signed in
