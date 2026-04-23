@@ -55,3 +55,4 @@ Timestamp,User,Event Type,Details
 2026-04-23 10:56:12,user,Login,Successfully signed in
 2026-04-23 10:56:21,admin,Login,Successfully signed in
 2026-04-23 10:58:09,admin,PDF Conversion,Batch of 1 files processed
+2026-04-23 13:29:02,test_user,Test Event,Testing hybrid logging logic
