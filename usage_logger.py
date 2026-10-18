@@ -11,7 +11,6 @@ LOG_FILE = os.path.join(BASE_DIR, "usage_log.csv")
 def is_gsheet_configured():
     """Checks if Google Sheets connection is configured in st.secrets."""
     try:
-        # Check for both standard and common variations
         if hasattr(st, "secrets"):
             if "connections" in st.secrets and "gsheets" in st.secrets["connections"]:
                 return True
@@ -24,34 +23,27 @@ def is_gsheet_configured():
 def get_logging_mode():
     """Returns a string indicating where logs are currently being saved."""
     if is_gsheet_configured():
-        return "Google Sheets (Cloud)"
-    return "CSV (Local)"
+        return "Google Sheets (Active)"
+    return "CSV (Local Only)"
+
+def _get_gsheet_url():
+    """Extracts spreadsheet URL from secrets if present."""
+    if "connections" in st.secrets and "gsheets" in st.secrets["connections"]:
+        return st.secrets["connections"]["gsheets"].get("spreadsheet") or st.secrets["connections"]["gsheets"].get("url")
+    if "gsheets" in st.secrets:
+        return st.secrets["gsheets"].get("spreadsheet") or st.secrets["gsheets"].get("url")
+    return None
 
 def log_event(user, event_type, details):
-    """Logs an event to the appropriate destination (CSV or GSheets)."""
+    """Logs an event to the appropriate destination (CSV and/or GSheets)."""
     vn_tz = timezone(timedelta(hours=7))
     timestamp = datetime.now(vn_tz).strftime("%Y-%m-%d %H:%M:%S")
     
     if is_gsheet_configured():
         try:
-            print(f"DEBUG: Attempting to log to Google Sheets for user {user}...")
-            # Import GSheetsConnection only when needed
             from streamlit_gsheets import GSheetsConnection
-            
-            # Use specific connection key if available
-            conn_key = "gsheets" if "connections" in st.secrets else "gsheets"
-            
-            # Robustly find the spreadsheet URL from secrets
-            ss_url = None
-            if "connections" in st.secrets and "gsheets" in st.secrets["connections"]:
-                ss_url = st.secrets["connections"]["gsheets"].get("spreadsheet") or st.secrets["connections"]["gsheets"].get("url")
-            elif "gsheets" in st.secrets:
-                ss_url = st.secrets["gsheets"].get("spreadsheet") or st.secrets["gsheets"].get("url")
-            
-            conn = st.connection(conn_key, type=GSheetsConnection)
-            
-            # Read existing data with 0 TTL to ensure freshness
-            # Pass the URL explicitly if we found it to be extra safe
+            ss_url = _get_gsheet_url()
+            conn = st.connection("gsheets", type=GSheetsConnection)
             df = conn.read(spreadsheet=ss_url, ttl=0)
             
             new_row = pd.DataFrame([{
@@ -61,27 +53,17 @@ def log_event(user, event_type, details):
                 "Details": details
             }])
             
-            # Ensure columns match
-            if df.empty:
-                updated_df = new_row
-            else:
-                updated_df = pd.concat([df, new_row], ignore_index=True)
-            
+            updated_df = new_row if df.empty else pd.concat([df, new_row], ignore_index=True)
             conn.update(spreadsheet=ss_url, data=updated_df)
-            print("DEBUG: Google Sheets log update successful.")
-            st.session_state["last_log_status"] = "Success: Logged to Google Sheets"
-            return # Success
+            st.session_state["last_log_status"] = "Success: Logged to Google Sheets & CSV"
         except Exception as e:
-            error_msg = f"CRITICAL ERROR: Failed to log to GSheet: {str(e)}"
-            print(error_msg)
+            print(f"CRITICAL ERROR: Failed to log to GSheet: {e}")
             st.session_state["last_log_status"] = f"Error: {str(e)}"
-            # Final fallback just in case, but now we have a status
-            log_to_csv_fallback(timestamp, user, event_type, details)
-            return
+    else:
+        st.session_state["last_log_status"] = "Success: Logged to local CSV"
 
-    # Default: Log to local CSV (for localhost)
+    # Always write to local CSV fallback
     log_to_csv_fallback(timestamp, user, event_type, details)
-    st.session_state["last_log_status"] = "Success: Logged to local CSV"
 
 def log_to_csv_fallback(timestamp, user, event_type, details):
     """Fallback helper for CSV logging."""
@@ -100,16 +82,8 @@ def get_logs():
     if is_gsheet_configured():
         try:
             from streamlit_gsheets import GSheetsConnection
-            conn_key = "gsheets" if "connections" in st.secrets else "gsheets"
-            
-            # Find the URL
-            ss_url = None
-            if "connections" in st.secrets and "gsheets" in st.secrets["connections"]:
-                ss_url = st.secrets["connections"]["gsheets"].get("spreadsheet") or st.secrets["connections"]["gsheets"].get("url")
-            elif "gsheets" in st.secrets:
-                ss_url = st.secrets["gsheets"].get("spreadsheet") or st.secrets["gsheets"].get("url")
-                
-            conn = st.connection(conn_key, type=GSheetsConnection)
+            ss_url = _get_gsheet_url()
+            conn = st.connection("gsheets", type=GSheetsConnection)
             df = conn.read(spreadsheet=ss_url, ttl=0)
             if not df.empty:
                 return df.to_dict('records')[::-1]

@@ -20,7 +20,6 @@ html, body, [data-testid="stAppViewContainer"] {
     padding-bottom: 1rem !important;
 }
 
-/* Header Styling */
 /* Main Header Enhancement */
 .main-header {
     background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
@@ -33,7 +32,20 @@ html, body, [data-testid="stAppViewContainer"] {
     letter-spacing: -0.025em;
 }
 
-/* Tab Styling */
+.sub-header {
+    text-align: center;
+    color: #64748b;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.app-logo {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 0.2rem;
+}
+
+/* Tab Styling (for Admin sub-tabs) */
 .stTabs [data-baseweb="tab-list"] {
     gap: 2rem;
     justify-content: center;
@@ -60,8 +72,8 @@ html, body, [data-testid="stAppViewContainer"] {
     border-bottom: 2px solid #2563eb !important;
 }
 
-/* PDF Converter Component Styles */
-.converter-card {
+/* Card Component Styles */
+.converter-card, .app-card {
     background: white;
     padding: 1.5rem;
     border-radius: 12px;
@@ -71,58 +83,24 @@ html, body, [data-testid="stAppViewContainer"] {
     transition: transform 0.2s ease;
 }
 
-.converter-card:hover {
+.converter-card:hover, .app-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-.file-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
+/* Word Hint Box */
+.word-hint {
     background: #f8fafc;
-    border-radius: 8px;
-    margin-bottom: 0.5rem;
-    border: 1px solid #f1f5f9;
-}
-
-.status-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.status-pending { background: #fef3c7; color: #92400e; }
-.status-success { background: #dcfce7; color: #166534; }
-.status-error { background: #fee2e2; color: #991b1b; }
-
-/* Instruction Boxes */
-.guide-box {
-    background: #f0f9ff;
-    padding: 1.25rem;
-    border-radius: 10px;
-    border-left: 4px solid #0ea5e9;
-    margin-bottom: 1.5rem;
-}
-
-.guide-box h4 {
-    margin-top: 0;
-    color: #0369a1;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.guide-box ul {
-    margin-bottom: 0;
-    padding-left: 1.5rem;
-    color: #0c4a6e;
+    border-left: 4px solid #3b82f6;
+    padding: 0.85rem 1.25rem;
+    border-radius: 6px;
+    margin: 0.75rem 0 1rem 0;
     font-size: 0.9rem;
+    color: #334155;
+    line-height: 1.5;
 }
 
+/* Settings Panel */
 .settings-panel {
     background: #f8fafc;
     padding: 1rem 1.5rem;
@@ -142,12 +120,6 @@ html, body, [data-testid="stAppViewContainer"] {
     white-space: nowrap;
 }
 
-.settings-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-
 .settings-label {
     font-weight: 700;
     color: #475569;
@@ -155,40 +127,24 @@ html, body, [data-testid="stAppViewContainer"] {
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
-.download-all-btn {
-    margin-top: 1.5rem;
-    width: 100%;
-}
 
-/* Metric Cards */
-.metric-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.metric-card {
+/* Login Screen Styles */
+.login-container {
+    max-width: 440px;
+    margin: 2rem auto;
     background: white;
-    padding: 1.25rem;
+    padding: 2rem;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
-.metric-value {
-    font-size: 1.8rem;
+.login-header {
+    font-size: 1.4rem;
     font-weight: 700;
-    color: #1e40af;
-    margin-bottom: 0.25rem;
-}
-
-.metric-label {
-    font-size: 0.85rem;
-    color: #64748b;
-    font-weight: 600;
-    text-transform: uppercase;
+    color: #1e3a8a;
+    text-align: center;
+    margin-bottom: 1.2rem;
 }
 
 /* Enhanced Table Display */
@@ -198,17 +154,8 @@ html, body, [data-testid="stAppViewContainer"] {
     overflow: hidden;
 }
 
-/* Log Filter styling */
-.filter-row {
-    background: #f1f5f9;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .main-header { font-size: 1.8rem; }
     .stTabs [data-baseweb="tab-list"] { gap: 0.5rem; }
-    .metric-container { grid-template-columns: 1fr; }
 }

@@ -9,12 +9,13 @@ venv/
 env/
 .env
 
+# Streamlit secrets (protect sensitive keys)
+.streamlit/secrets.toml
+
 # OS
 .DS_Store
 Thumbs.db
 
-# Project specific
+# Project generated/temp files
 *.xlsx
 *.docx
-!Demo_2025 avg Report.docx
-NumCompare.xlsx
