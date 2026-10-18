@@ -17,3 +17,13 @@ Timestamp,User,Event Type,Details
 2026-10-18 18:32:21,user,Login,Successfully signed in
 2026-10-18 18:38:01,user,Login,Successfully signed in
 2026-10-18 19:24:30,user,Login,Successfully signed in
+2026-10-18 19:44:06,user,Login,Successfully signed in
+2026-10-18 19:44:30,user,Comparison,"Files: fs_Advance_2025_v-ph.docx, fs_Advance_2025_v-ph_E_120326.docx | Mode: Number | Mismatches: 321"
+2026-10-18 19:59:14,user,Login,Successfully signed in
+2026-10-18 20:01:26,user,Comparison,"Files: fs_Advance_2025_v-ph.docx, fs_Advance_2025_v-ph_E_120326.docx | Mode: Number | Mismatches: 612"
+2026-10-18 20:14:21,user,Login,Successfully signed in
+2026-10-18 20:15:02,user,Comparison,"Files: fs_Advance_2025_v-ph.docx, fs_Advance_2025_v-ph_E_120326.docx | Mode: Number | Mismatches: 3"
+2026-10-18 20:30:14,user,Comparison,"Files: fs_Advance_2025_v-ph.docx, fs_Advance_2025_v-ph_E_120326.docx | Mode: Text | Mismatches: 1143"
+2026-10-18 20:38:56,user,Login,Successfully signed in
+2026-10-18 20:42:24,user,Login,Đăng nhập thành công
+2026-10-18 20:42:55,user,Comparison,"Tệp: fs_Advance_2025_v-ph.docx, fs_Advance_2025_v-ph_E_120326.docx | Chế độ: Number | Lệch: 6"
