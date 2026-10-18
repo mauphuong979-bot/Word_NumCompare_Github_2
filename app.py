@@ -2,17 +2,10 @@ import streamlit as st
 import pandas as pd
 import io
 import os
+import sys
 import platform
-from extractor import (
-    extract_table_data,
-    get_document_tables_summary,
-    detect_number_format,
-    format_display_number
-)
-from processor import compare_documents
-from annotator import annotate_docx, create_zip_package
 
-# Cấu hình trang ứng dụng
+# Cấu hình trang ứng dụng (phải gọi đầu tiên trước mọi lệnh Streamlit khác)
 st.set_page_config(
     page_title="Đối Chiếu Số Liệu Word",
     page_icon="📊",
@@ -20,9 +13,29 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Đường dẫn tệp
+# Đảm bảo thư mục hiện tại luôn nằm ở đầu sys.path (đặc biệt quan trọng trên Streamlit Cloud)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
 CSS_FILE = os.path.join(BASE_DIR, "style.css")
+
+# Nhập các mô-đun nghiệp vụ với cơ chế kiểm tra và hiển thị lỗi rõ ràng
+try:
+    from extractor import (
+        extract_table_data,
+        get_document_tables_summary,
+        detect_number_format,
+        format_display_number
+    )
+    from processor import compare_documents
+    from annotator import annotate_docx, create_zip_package
+except Exception as e:
+    import traceback
+    st.error(f"❌ Lỗi tải thư viện ứng dụng ({type(e).__name__}): {str(e)}")
+    st.code(traceback.format_exc())
+    st.info("💡 Hướng dẫn xử lý: Vui lòng vào thanh điều khiển 'Manage app' ở góc dưới bên phải Streamlit Cloud -> chọn dấu 3 chấm (⋮) -> 'Reboot app' để Streamlit Cloud cài đặt lại đầy đủ các gói từ requirements.txt.")
+    st.stop()
 
 # Tải định dạng CSS tùy biến
 if os.path.exists(CSS_FILE):
